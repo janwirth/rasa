@@ -1,0 +1,72 @@
+ {
+  /* INJECTED-START: STYLES */
+}
+.redocusaurus-back-button {
+  width: 100%;
+  max-width: var(--tabula-outer-width);
+  margin-bottom: 0;
+  margin-left: auto;
+  margin-right: auto;
+  padding-top: 0;
+  padding-bottom: 0;
+  align-items: center;
+  display: flex;
+  height: 3rem;
+  top: 0;
+  background: transparent;
+  transition: none;
+  position: fixed;
+  top: var(--ifm-navbar-height);
+  z-index: 100;
+}
+.redocusaurus-back-button:before {
+  content: '';
+  z-index: -1;
+  position: fixed;
+  display: block;
+  width: 100vw;
+  height: 3rem;
+  left: 0;
+  background: rgba(245, 245, 245, 1);
+  top: var(--ifm-navbar-height);
+}
+.redocusaurus-back-button:hover {
+  color: white;
+}
+.redocusaurus-back-button:hover:before {
+  background-color: var(--ifm-link-color);
+}
+.redocusaurus {
+  margin-top: 3rem;
+}
+.redoc-wrap .menu-content {
+  position: fixed;
+  top: calc(var(--ifm-navbar-height) + 3rem) !important;
+  height: calc(100vh - var(--ifm-navbar-height) - 3rem) !important;
+  border-right-color: rgba(0, 0, 0, 0.1);
+}
+.redoc-wrap .menu-content li label:hover,
+.redoc-wrap .menu-content li label.active {
+  color: var(--ifm-link-color);
+}
+.redoc-wrap h1 {
+  color: var(--ifm-link-color);
+}
+.redoc-wrap .api-content span > a {
+  color: var(--ifm-link-color);
+}
+@media screen and (min-width: 800px) {
+  .redoc-wrap .api-content {
+    margin-left: 300px;
+  }
+}
+.main-wrapper {
+  width: 100vw;
+  overflow: hidden;
+}
+.redocusaurus .menu-content + div svg {
+  color: var(--ifm-link-color);
+}
+ {
+  /* INJECTED-END: STYLES */
+}

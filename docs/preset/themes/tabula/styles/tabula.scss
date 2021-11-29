@@ -1,0 +1,416 @@
+/*
+           _
+          | |
+  ___ ___ | | ___  _ __ ___
+ / __/ _ \| |/ _ \| '__/ __|
+| (_| (_) | | (_) | |  \__ \
+ \___\___/|_|\___/|_|  |___/
+*/
+:root {
+  --ifm-color-primary: hsl(215, 77%, 55%);
+  --ifm-color-primary-dark: hsl(215, 62%, 50%);
+  --ifm-color-primary-darker: hsl(215, 62%, 47%);
+  --ifm-color-primary-darkest: hsl(215, 62%, 39%);
+  --ifm-color-primary-light: hsl(215, 77%, 62%);
+  --ifm-color-primary-lighter: hsl(215, 77%, 69%);
+  --ifm-color-primary-lightest: hsl(215, 77%, 78%);
+  --ifm-color-primary-contrast-background: hsl(215, 74%, 95%);
+  --ifm-color-primary-contrast-foreground: hsl(215, 62%, 17%);
+  --ifm-code-font-size: 95%;
+  /* rasa brand colors */
+  --tabula-color-brand: hsl(250, 77%, 55%);
+  --tabula-color-brand-dark: hsl(250, 62%, 50%);
+  --tabula-color-brand-darker: hsl(250, 62%, 47%);
+  --tabula-color-brand-darkest: hsl(250, 62%, 39%);
+  --tabula-color-brand-light: hsl(250, 77%, 62%);
+  --tabula-color-brand-lighter: hsl(250, 77%, 69%);
+  --tabula-color-brand-lightest: hsl(250, 77%, 78%);
+  --tabula-color-brand-contrast-background: hsl(250, 74%, 95%);
+  --tabula-color-brand-contrast-foreground: hsl(250, 62%, 17%);
+}
+
+/*
+ _                                           _
+| |                                         | |
+| |_ _   _ _ __   ___   __ _ _ __ __ _ _ __ | |__  _   _
+| __| | | | '_ \ / _ \ / _` | '__/ _` | '_ \| '_ \| | | |
+| |_| |_| | |_) | (_) | (_| | | | (_| | |_) | | | | |_| |
+ \__|\__, | .__/ \___/ \__, |_|  \__,_| .__/|_| |_|\__, |
+      __/ | |           __/ |         | |           __/ |
+     |___/|_|          |___/          |_|          |___/
+*/
+
+:root {
+  --tabula-font-family-mono: FiraCode, monospace;
+  --tabula-line-height-mono: calc(0.85em + 12px);
+  --tabula-font-family-sans: Graphik, Arial, sans-serif;
+  --tabula-line-height-sans: calc(0.7em + 14.4px);
+
+  --ifm-font-family-base: var(--tabula-font-family-sans);
+  --ifm-font-family-monospace: var(--tabula-font-family-mono);
+  --ifm-font-weight-light: 400;
+  --ifm-font-weight-semibold: 500;
+  --ifm-font-weight-bold: 600;
+
+  --ifm-line-height-base: var(--tabula-line-height-sans);
+}
+
+html {
+  font-family: var(--ifm-font-family-base);
+  font-size: var(--ifm-font-size-base);
+  * {
+    line-height: var(--ifm-line-height-base);
+  }
+}
+
+.markdown {
+  // TODO: make heading and base font sizes responsive
+  font-size: var(--ifm-font-size-base);
+  // --ifm-h1-vertical-rhythm-top: 3;
+  // --ifm-h2-vertical-rhythm-top: 2;
+  // --ifm-h3-vertical-rhythm-top: 1.5;
+  // --ifm-heading-vertical-rhythm-top: 1.25;
+  // --ifm-h1-vertical-rhythm-bottom: 1.25;
+  // --ifm-heading-vertical-rhythm-bottom: 1;
+}
+
+/*
+               _
+              | |
+  ___ ___   __| | ___
+ / __/ _ \ / _` |/ _ \
+| (_| (_) | (_| |  __/
+ \___\___/ \__,_|\___|
+*/
+.docusaurus-highlight-code-line {
+  background-color: rgba(0, 0, 0, 0.1);
+  display: block;
+  margin: 0 calc(-1 * var(--ifm-pre-padding));
+  padding: 0 var(--ifm-pre-padding);
+}
+
+html[data-theme='dark'] .docusaurus-highlight-code-line {
+  background-color: rgba(0, 0, 0, 0.3);
+}
+
+/*
+                   _
+                  | |
+ _ __   __ ___   _| |__   __ _ _ __
+| '_ \ / _` \ \ / / '_ \ / _` | '__|
+| | | | (_| |\ V /| |_) | (_| | |
+|_| |_|\__,_| \_/ |_.__/ \__,_|_|
+*/
+
+:root {
+  --tabula-outer-gap-x: 1rem;
+  --tabula-outer-width: 1280px;
+  // --ifm-navbar-height: 3.75rem;
+  --ifm-navbar-item-padding-horizontal: 1rem;
+  // --ifm-navbar-item-padding-vertical: 0.25rem;
+  --ifm-navbar-padding-horizontal: var(--tabula-outer-gap-x);
+  --ifm-navbar-padding-vertical: calc(var(--ifm-spacing-vertical) * 0.5);
+  --ifm-navbar-sidebar-width: var(--doc-sidebar-width);
+
+  --ifm-navbar-link-color: var(--ifm-font-color-base);
+  --ifm-navbar-link-hover-color: var(--tabula-color-brand-dark);
+  --ifm-navbar-link-active-color: var(--tabula-color-brand-darkest);
+}
+
+/* adjust the close button to purple background, it was black */
+[role='banner'] button.close {
+  color: white;
+  opacity: 1;
+}
+.navbar__inner {
+  max-width: var(--tabula-outer-width);
+  margin-right: auto;
+  margin-left: auto;
+}
+.navbar__title,
+.navbar__item {
+  font-weight: 600;
+  font-weight: var(--ifm-font-weight-semibold);
+}
+.navbar__link {
+  color: var(--ifm-navbar-link-color);
+}
+.navbar__link:hover,
+.navbar__link--active {
+  color: var(--ifm-navbar-link-hover-color);
+  text-decoration: none;
+}
+
+/*
+ _
+| |
+| | ___   __ _  ___
+| |/ _ \ / _` |/ _ \
+| | (_) | (_| | (_) |
+|_|\___/ \__, |\___/
+          __/ |
+         |___/
+*/
+
+.tabula-rasa-docs-logo {
+  display: block;
+  width: 125px;
+  height: 45px;
+  margin-right: 2rem;
+}
+
+/*
+     _
+    | |
+  __| | ___   ___ ______ _ __   __ _  __ _  ___
+ / _` |/ _ \ / __|______| '_ \ / _` |/ _` |/ _ \
+| (_| | (_) | (__       | |_) | (_| | (_| |  __/
+ \__,_|\___/ \___|      | .__/ \__,_|\__, |\___|
+                        | |           __/ |
+                        |_|          |___/
+*/
+
+.doc-page {
+  width: 100%;
+  max-width: var(--tabula-outer-width);
+  margin-right: auto;
+  margin-left: auto;
+}
+
+/*
+     _     _      _
+    (_)   | |    | |
+ ___ _  __| | ___| |__   __ _ _ __
+/ __| |/ _` |/ _ \ '_ \ / _` | '__|
+\__ \ | (_| |  __/ |_) | (_| | |
+|___/_|\__,_|\___|_.__/ \__,_|_|
+*/
+
+.tabula-sidebar {
+}
+
+.tabula-sidebar__logotype {
+  display: flex;
+  align-items: center;
+  .logotype__logo {
+    flex: 0 0 auto;
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background-color: #999;
+  }
+  .logotype__heading {
+    flex: 1 1 min-content;
+    font-size: 20px;
+    margin: 0 0 0 1rem;
+  }
+}
+
+.tabula-sidebar__tagline {
+  font-weight: normal;
+  margin: 1em 0 0 0;
+}
+
+/* center page content */
+
+.main-wrapper {
+  margin: 0 auto;
+  max-width: var(--tabula-outer-width);
+}
+
+:root {
+  /* make all links purple */
+  --ifm-link-color: var(--tabula-color-brand);
+  --ifm-color-primary: var(--tabula-color-brand);
+  /* make all links purple */
+  --ifm-menu-color-active: var(--ifm-link-color);
+  /* change bottom nav to purple border on hover */
+  --ifm-pagination-nav-color-hover: var(--ifm-link-color);
+  /* adjust docsearch color */
+  --docsearch-primary-color: var(--tabula-color-brand-light) !important;
+  --ifm-spacing-horizontal: calc(3 * var(--ifm-global-spacing));
+}
+
+// adjust doc search button styles
+.DocSearch-Button.DocSearch-Button:hover {
+  outline: 1px solid var(--tabula-color-brand-light);
+  box-shadow: none;
+}
+// give it the same border radius as other navbar entries
+.DocSearch-Button.DocSearch-Button {
+  border-radius: 0.25rem;
+}
+
+.navbar {
+  padding: 0;
+}
+.navbar__inner {
+  padding-right: var(--ifm-navbar-padding-horizontal);
+  padding-left: var(--ifm-navbar-padding-horizontal);
+}
+
+[role='banner'] {
+  padding: calc(0.5 * var(--ifm-global-spacing)) var(--ifm-navbar-padding-horizontal);
+  height: initial !important;
+  max-width: var(--tabula-outer-width);
+  margin: 0 auto;
+  width: 100%;
+  position: relative !important;
+  &:before {
+    content: '';
+    background: var(--tabula-color-brand);
+    width: 200vw;
+    height: 100%;
+    left: -100vw;
+    display: block;
+    position: absolute;
+    z-index: -1;
+  }
+  > * {
+    text-align: left !important;
+  }
+}
+
+// adjust sidebar item spacing
+
+.menu__list-item:not(:first-child) {
+  margin-top: 0.5rem;
+}
+:root {
+  --ifm-menu-link-padding-vertical: 0.5rem;
+}
+
+// fix not found page looking weird
+.row .col.col--6 {
+  --ifm-col-width: initial;
+}
+
+.row .col.col--offset-3 {
+  margin-left: 0;
+}
+
+// fix announcement bar alignment
+[role='banner'] > * {
+  flex-basis: 0 !important;
+}
+
+.container {
+  padding-top: 4rem !important;
+}
+
+// adjust navbar item styling
+
+.navbar__link {
+  font-weight: var(--ifm-font-weight-semibold);
+}
+
+[class*='iconExternalLink'] {
+  display: none;
+}
+
+.admonition-caution,
+.alert--warning {
+  color: #582a0f;
+  background-color: #ffbd00;
+  border-left-color: #e6aa00;
+}
+
+.theme-doc-version-badge {
+  background-color: var(--tabula-color-brand-contrast-background);
+  border-radius: var(--ifm-pre-border-radius);
+  font-size: 100%;
+  font-weight: medium;
+  padding: 0.7em 0.9em;
+  margin-bottom: 1em;
+}
+
+//:root {
+//    --ifm-font-size-base: 16px
+//}
+
+@media screen and (max-width: 800px) {
+  :root {
+    --ifm-font-size-base: 12px;
+  }
+}
+
+// style dropdowns
+.dropdown.dropdown {
+  border: 1px solid var(--ifm-color-emphasis-300);
+  border-radius: 0.25rem;
+  padding: 0.2em 0.8em 0.2em 1em;
+}
+
+// style version dropdown in sidebar
+aside .dropdown {
+  width: 100%;
+  margin-top: 1rem;
+}
+
+.dropdown > .navbar__link {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.dropdown > .navbar__link::after {
+  transform: translateY(-1px);
+  opacity: 0.6;
+}
+
+// fix search bar glitching out of mobile sidebar
+
+[class*='searchBox'] {
+  position: relative !important;
+  right: 0 !important;
+  padding: 0 !important;
+}
+
+// make searchbox look like desktop bc it has
+.DocSearch-Button-Keys.DocSearch-Button-Keys {
+  display: flex;
+}
+.DocSearch-Button-Placeholder.DocSearch-Button-Placeholder {
+  display: block;
+}
+
+// make the version dropdown magically appear
+// note that it needs to come right after the searchBox to work.
+
+[class*='searchBox'] + .dropdown {
+  display: flex;
+  margin-bottom: 1rem;
+}
+
+/* MODIFIED: ADDED STYLES FOR DOCSEARCH BUTTON */
+.DocSearch-Button.DocSearch-Button {
+  background: transparent;
+  border: 1px solid var(--ifm-color-emphasis-300);
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding: calc(2 * var(--ifm-navbar-item-padding-vertical));
+  height: auto;
+  margin: 1rem 0;
+}
+/* MODIFIED-END: ADDED STYLES FOR DOCSEARCH BUTTON */
+
+// shrink logo, othre visual adjustments
+.tabula-rasa-docs-logo svg {
+  // transform-origin: top left;
+  transform: scale(0.9) translateX(2px) translateY(1px);
+}
+
+.navbar__toggle svg {
+  transform: translateY(1px) scale(0.8);
+}
+.navbar__toggle svg path {
+  stroke-width: 3;
+}
+
+//
+.tabula-sidebar-below {
+  padding: 1.5rem;
+  background-color: var(--ifm-menu-color-background-active);
+}

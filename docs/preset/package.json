@@ -1,0 +1,56 @@
+{
+  "name": "@rasahq/docusaurus-preset-tabula",
+  "version": "1.0.0-alpha.0",
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "ssh://git@github.com/rasahq/docusaurus-tabula.git",
+    "directory": "packages/docusaurus-preset-tabula"
+  },
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "tag": "git tag $npm_package_name@$npm_package_version",
+    "untag": "git tag -d $npm_package_name@$npm_package_version",
+    "prepublishOnly": "npm run tag"
+  },
+  "dependencies": {
+    "@docusaurus/core": "2.0.0-beta.9",
+    "@docusaurus/plugin-content-blog": "2.0.0-beta.9",
+    "@docusaurus/plugin-content-docs": "2.0.0-beta.9",
+    "@docusaurus/plugin-content-pages": "2.0.0-beta.9",
+    "@docusaurus/plugin-debug": "2.0.0-beta.9",
+    "@docusaurus/plugin-google-analytics": "2.0.0-beta.9",
+    "@docusaurus/plugin-google-gtag": "2.0.0-beta.9",
+    "@docusaurus/plugin-ideal-image": "^2.0.0-beta.9",
+    "@docusaurus/plugin-sitemap": "^2.0.0-beta.9",
+    "@docusaurus/theme-classic": "2.0.0-beta.9",
+    "@docusaurus/theme-common": "^2.0.0-beta.9",
+    "@docusaurus/theme-search-algolia": "2.0.0-beta.9",
+    "@fortawesome/fontawesome-svg-core": "^1.2.36",
+    "@fortawesome/free-solid-svg-icons": "^5.15.4",
+    "@fortawesome/react-fontawesome": "^0.1.16",
+    "@ionic-internal/docusaurus-plugin-tag-manager": "^2.0.0",
+    "deep-extend": "^0.6.0",
+    "docusaurus-plugin-sass": "^0.2.1",
+    "esbuild-loader": "^2.16.0",
+    "fix-esm": "^1.0.1",
+    "redocusaurus": "^0.5.0",
+    "sass": "^1.43.4",
+    "sass-loader": "^12.3.0",
+    "unist-util-visit-children": "^2.0.0",
+    "webpack": "5.61.0"
+  },
+  "peerDependencies": {
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2"
+  },
+  "engines": {
+    "node": ">=12.13.0"
+  },
+  "devDependencies": {
+    "dotenv": "^10.0.0"
+  }
+}
