@@ -407,7 +407,7 @@
       "label": "rasa.utils",
       "type": "category"
     },
-    "reference/rasa/__main__",
+
     "reference/rasa/api",
     "reference/rasa/exceptions",
     "reference/rasa/jupyter",

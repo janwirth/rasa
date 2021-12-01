@@ -31,67 +31,137 @@ const environment = {
   isDeployPreview: NETLIFY && CONTEXT === 'deploy-preview',
 };
 
-/**
- *
- * @param {import('@docusaurus/types').LoadContext} context
- * @param {any} options
- * @returns {import('@docusaurus/types').DocusaurusConfig}
- */
-module.exports = function preset(context, options = {}) {
-  /** @type {any}
-   * @description create some empty structures so that we don't need extra duck typing / plumbing
-   */
-  var config = { themes: [], plugins: [] };
-  // THEMING
-  useCustomizedClassicTheme(context, options, config);
-  // CONTENTS
-  useGeneratePagesFromDocsDirectory(context, options, config);
-  // @ts-ignore
-  useApiDocumentationPages(context, config, context.siteConfig.customFields);
-  useMarkupPostprocessing(context, config);
-  // INFORMATION ARCHITECTURE
-  useAlgolia(context, config);
-  useGenerateSitemap(context, config);
-  // OTHER
-  useDebug(context, options, config);
-  useImageOptimization(context, config);
-  useGtm(context, config);
-  config.trailingSlash = true;
-  config.plugins.push(require.resolve('./plugins/plugin-css'));
-
-  return config;
-};
 
 /**
  * This function is a generator for docusaurus configurations.
  * Why is a preset not enough? Because we need to 1. acccess the siteConfig and 2. the themeConfig
  * IDEA: Theoretically we do not even need to create a preset, perhaps we can just hook the plugins / themes from the preset right into the siteConfig that we generate?
- * @typedef {{specs? : any[], productKey : string}} TabulaConfig
+ * @typedef {import("./types").TabulaConfig} TabulaConfig
  * It does
  * 1. configure the siteConfig (what you describe in a docusaurus.config.js) including the themeConfig (which configures whatever themes you are using for docusaurus)
  * 2. build a preset and injects it into the siteconfig
- * @param {import('@docusaurus/types').DocusaurusConfig} docusaurusConfig
  * @param {TabulaConfig} tabulaConfig
  * the specs are API specs to be rendered in the sidebar, the productKey is rasa / rasa-x / rasa-sdk and MUST equal the part of the URL behind docs on production
  * @returns {import('@docusaurus/types').DocusaurusConfig}
  */
 
-module.exports.use = function (docusaurusConfig, tabulaConfig) {
+ module.exports.use = function (tabulaConfig) {
   // merge with defaults
-  docusaurusConfig = deepExtend({}, createBaseConfig(tabulaConfig), docusaurusConfig);
-  useNavigationWithProductPortfolio(docusaurusConfig, tabulaConfig);
+  const docusaurusConfig = createBaseConfig(tabulaConfig)
+  configurePluginsAndThemes(docusaurusConfig, tabulaConfig)
   return docusaurusConfig;
 };
+
+
+const { isDev, isProd, isDeployPreview } = require('./context');
+/**
+ * 
+ * @param {TabulaConfig} tabulaConfig 
+ * @returns {import('@docusaurus/types').DocusaurusConfig}
+ */
+const createBaseConfig = (tabulaConfig) => {
+  /**
+   * @description
+   * extra required by swizzled components which will be available through the
+   * useDocusaurus hook
+   */
+  const customFields = {legacyVersions: tabulaConfig.legacyVersions, productLogo: tabulaConfig.productLogo, versionLabels: 
+    {
+      current: 'Master/Unreleased',
+    }}
+  /**
+   * @type {import('@docusaurus/types').DocusaurusConfig}
+   */
+  // @ts-ignore
+  var docusaurusConfig = {
+    customFields,
+  // defaults
+  title: tabulaConfig.title,
+  titleDelimiter: '|',
+  tagline: tabulaConfig.tagline,
+  organizationName: 'rasahq',
+  favicon: 'img/favicon.ico',
+  baseUrlIssueBanner: true,
+  trailingSlash: true,
+  noIndex: isDeployPreview,
+  onBrokenLinks: 'ignore', // TODO: fix
+  onDuplicateRoutes: 'ignore', // TODO: fix
+  onBrokenMarkdownLinks: 'ignore', // TODO: fix
+  i18n: {defaultLocale: 'en', locales: ['en'], localeConfigs: {
+    en: {
+      label: 'English',
+      direction: 'ltr',
+    }}
+  },
+  // BUILD CONFIGURATION
+  webpack: {
+    jsLoader: (isServer) => ({
+      loader: require.resolve('esbuild-loader'),
+      options: {
+        loader: 'jsx',
+        format: isServer ? 'cjs' : undefined,
+        target: isServer ? 'node12' : 'es2017',
+      },
+    }),
+  },
+  themeConfig: {
+    colorMode: { disableSwitch: true },
+
+    favicon: '/img/favicon.ico',
+    organizationName: 'RasaHQ',
+    projectName: tabulaConfig.productKey,
+    announcementBar: tabulaConfig.announcementBar,
+
+    footer: {
+      copyright: `Copyright © ${new Date().getFullYear()} Rasa Technologies GmbH`,
+    },
+  }
+}
+  // baseUrl and URL are set by this function call
+  useNavigationWithProductPortfolio(docusaurusConfig, tabulaConfig);
+  return docusaurusConfig
+};
+
+/**
+ *
+ * @param {import('@docusaurus/types').DocusaurusConfig}
+ * @param {TabulaConfig} options
+ * @returns {void}
+ */
+const configurePluginsAndThemes = (config, options) => {
+  config.plugins = config.plugins || []
+  config.themes = config.themes || []
+  /** @type {any}
+   * @description create some empty structures so that we don't need extra duck typing / plumbing
+   */
+  // THEMING
+  useCustomizedClassicTheme(options, config);
+  // CONTENTS
+  useGeneratePagesFromDocsDirectory(options, config);
+  useApiDocumentationPages(config, options);
+  useMarkupPostprocessing(config);
+  // INFORMATION ARCHITECTURE
+  useAlgolia(config, options);
+  useGenerateSitemap(config);
+  // OTHER
+  useDebug(options, config);
+  useImageOptimization(config);
+  useGtm(config);
+  config.trailingSlash = true;
+  config.plugins.push(require.resolve('./plugins/plugin-css'));
+};
+
+
 /**
  * @description
  * The core functionality of docusaurus: generate HTML/ React pages from MDX files.
- * @param {import('@docusaurus/types').LoadContext} context
  * @param {any} options
  * @param {import('@docusaurus/types').DocusaurusConfig} config
  * @returns {void}
  */
-function useGeneratePagesFromDocsDirectory(context, options, config) {
-  const pluginDocsDefaults = require('./defaults/plugin-docs');
+function useGeneratePagesFromDocsDirectory(options, config) {
+
+  const pluginDocsDefaults = require('./defaults/plugin-docs')(options);
   config.plugins.push([
     require.resolve('@docusaurus/plugin-content-docs'),
     deepExtend({}, pluginDocsDefaults, options.pluginDocs),
@@ -100,18 +170,21 @@ function useGeneratePagesFromDocsDirectory(context, options, config) {
 
 /**
  * @description
- * monkey patch the google tags manager to satisfy EU data regulations.
+ * monkey patch the ionic team google tags manager to satisfy EU data regulations.
  *
- * @param {import('@docusaurus/types').LoadContext} context
  * @param {import('@docusaurus/types').DocusaurusConfig} config
  * @returns {void}
  */
-function useGtm(context, config) {
+function useGtm(config) {
   const gtmPlugin = require('@ionic-internal/docusaurus-plugin-tag-manager');
   /** @type {any} */
-  const patched = (context) => {
+  const patched = () => {
+
+    const tagManager = {
+      trackingID: 'GTM-MMHSZCS',
+    };
     /** @type {any} */
-    const pluginInstance = gtmPlugin(context);
+    const pluginInstance = gtmPlugin({siteConfig : {themeConfig: {tagManager}}});
     /** @type {any} */
     const injectHtmlTags = () => {
       // discard evil GDPR-violating iframe that's in preBodyTags
@@ -167,19 +240,15 @@ function useGtm(context, config) {
   };
   config.plugins.push(patched);
 }
-const tagManager = {
-  trackingID: 'GTM-MMHSZCS',
-};
 
 /**
  * @description
  * This is a simple one: Optimizes images for production.
  *
- * @param {import('@docusaurus/types').LoadContext} context
  * @param {import('@docusaurus/types').DocusaurusConfig} config
  * @returns {void}
  */
-function useImageOptimization(context, config) {
+function useImageOptimization(config) {
   config.plugins.push([
     '@docusaurus/plugin-ideal-image',
     {
@@ -197,12 +266,11 @@ function useImageOptimization(context, config) {
  * 2. overrides (see 'swizzling' in docusaurus docs) some components from theme-classic where styling is not enough for the visual adjustments
  * 3. adds custom components that are needed in most rasa documentation pages.
  *
- * @param {import('@docusaurus/types').LoadContext} context
  * @param {any} options
  * @param {import('@docusaurus/types').DocusaurusConfig} config
  * @returns {void}
  */
-function useCustomizedClassicTheme(context, options, config) {
+function useCustomizedClassicTheme(options, config) {
   /** @type {any[]} */
   const customizedTheme = [
     [require.resolve('@docusaurus/theme-classic'), { ...options.themeClassic }],
@@ -213,12 +281,11 @@ function useCustomizedClassicTheme(context, options, config) {
 
 /**
  * @description Enable debug plugin if in debug environment or if options.debug is set to true
- * @param {import('@docusaurus/types').LoadContext} context
  * @param {any} options
  * @param {import('@docusaurus/types').DocusaurusConfig} config
  * @returns {void}
  */
-function useDebug(context, options, config) {
+function useDebug(options, config) {
   const { isProd } = options;
 
   const debug = typeof options.debug !== 'undefined' ? Boolean(options.debug) : !isProd;
@@ -231,7 +298,7 @@ function useDebug(context, options, config) {
  * @param {import('@docusaurus/types').DocusaurusConfig} config
  * @returns {void}
  */
-function useGenerateSitemap(context, config) {
+function useGenerateSitemap(config) {
   const pluginSitemapDefaults = {
     changefreq: 'weekly',
     priority: 0.5,
@@ -244,13 +311,28 @@ function useGenerateSitemap(context, config) {
 
 /**
  * @description We use algolia to provide page-wide search in our application
- * @param {import('@docusaurus/types').LoadContext} context
- * @param {import('@docusaurus/types').DocusaurusConfig} config
+ * @param {import('@docusaurus/types').DocusaurusConfig} docusaurusConfig
+ * @param {TabulaConfig} tabulaConfig
  * @returns {void}
  */
-function useAlgolia(context, config) {
+function useAlgolia(docusaurusConfig, tabulaConfig) {
+  const algoliaThemeConfig = {
+    // uncomment this line once the docusausus_tags are picked up in production
+    // in order to limit search results to one version and one language.
+    // contextualSearch: true,
+    apiKey: '1f9e0efb89e98543f6613a60f847b176',
+    indexName: 'rasa',
+    inputSelector: '.search-bar',
+    searchParameters: {
+      facetFilters: [`tags:${tabulaConfig.productKey}`],
+    },
+  };
+  docusaurusConfig.themeConfig.algolia = algoliaThemeConfig
   const algoliaTheme_ = require('@docusaurus/theme-search-algolia');
-
+  const validate = require("@docusaurus/core/lib/server/configValidation")
+  const Schema = validate.ConfigSchema
+  validate.validateConfig = config => config
+  Schema.validate = config => ({value : config})
   // monkey-patch the algolia theme
   const algoliaTheme = function (theme) {
     const result = algoliaTheme_(theme);
@@ -262,48 +344,45 @@ function useAlgolia(context, config) {
   };
 
   // TODO: enable contextualSearch
-  config.themes.push([algoliaTheme, algoliaThemeConfig]);
+  docusaurusConfig.themes.push([algoliaTheme]);
 }
 // configure themeConfig part of it.
 
-const algoliaThemeConfig = (tabulaConfig) => ({
-  // this is configured via DocSearch here:
-  // contextualSearch: true,
-  apiKey: '1f9e0efb89e98543f6613a60f847b176',
-  indexName: 'rasa',
-  inputSelector: '.search-bar',
-  searchParameters: {
-    facetFilters: [`tags:${tabulaConfig.customFields.productKey}`],
-  },
-});
+
 
 /**
  * @description We use redoc to render OpenAPI documentation as a site within our documentation
  * The entries in the sidebar are added in the swizzled DocSidebar component
- * @param {import('@docusaurus/types').LoadContext} context
  * @param {import('@docusaurus/types').DocusaurusConfig} config
  * @param {TabulaConfig} tabulaConfig
  * @returns {void}
  */
-function useApiDocumentationPages(context, config, tabulaConfig) {
-  const { baseUrl } = context;
+function useApiDocumentationPages(config, tabulaConfig) {
   const path = require('path');
-  // load the specs from the customFields in the theme if possible
+  // check if the specs are defined at all.
   /** @type {{title : string, config: import("docusaurus-plugin-redoc").PluginOptions}[]} */
-  const specs = context.siteConfig.themeConfig.customFields.customFields.specs;
+  const specs = tabulaConfig.specs;
   if (!specs) {
     return;
   }
 
   // prepare plugins and that insert the redoc stuff
   const redocusaurus = require('redocusaurus');
-  /** @type {any} */
-  const redoc = redocusaurus.default(context, {
+  /** 
+   * @description
+   * context is not used at all
+   * https://github.com/rohit-gohri/redocusaurus/blob/main/packages/redocusaurus/src/index.ts#L14
+   * @type {any}
+   */
+  // @ts-ignore
+  const redoc = redocusaurus.default({}, { 
     specs: specs.map(({ config }) => {
       config.apiDocComponent = '@theme/ApiDocWithBackButton';
       return config;
     }),
+    theme: {}
   });
+
 
   // merge everything into main config
   config.plugins = [...config.plugins, ...redoc.plugins];
@@ -312,11 +391,10 @@ function useApiDocumentationPages(context, config, tabulaConfig) {
 
 /**
  * @description Make markdown and HTML more powerful
- * @param {import('@docusaurus/types').LoadContext} context
  * @param {import('@docusaurus/types').DocusaurusConfig} config
  * @returns {void}
  */
-function useMarkupPostprocessing(context, config) {
+function useMarkupPostprocessing(config) {
   var found = false;
   // this configuration is a parameter for the classic theme
   // so we need to interate through existing themes and add it.
@@ -337,74 +415,19 @@ function useMarkupPostprocessing(context, config) {
   }
 }
 
-const { isDev, isProd, isDeployPreview } = require('./context');
-const createBaseConfig = (tabulaConfig) => ({
-  presets: [['@rasahq/docusaurus-preset-tabula', tabulaConfig]],
-  // defaults
-  title: 'Default Title',
-  tagline: 'Default tagline for Rasa Documentation site',
-  organizationName: 'rasahq',
-  favicon: 'img/favicon.ico',
-  baseUrlIssueBanner: true,
-  trailingSlash: true,
-  noIndex: isDeployPreview,
-  onBrokenLinks: 'ignore', // TODO: fix
-  onDuplicateRoutes: 'ignore', // TODO: fix
-  onBrokenMarkdownLinks: 'ignore', // TODO: fix
-  // BUILD CONFIGURATION
-  webpack: {
-    jsLoader: (isServer) => ({
-      loader: require.resolve('esbuild-loader'),
-      options: {
-        loader: 'jsx',
-        format: isServer ? 'cjs' : undefined,
-        target: isServer ? 'node12' : 'es2017',
-      },
-    }),
-  },
-  themeConfig: {
-    algolia: algoliaThemeConfig(tabulaConfig),
-    tagManager,
-    colorMode: { disableSwitch: true },
-    customFields: {
-      // FIXME: this is a simplistic solution to https://github.com/RasaHQ/rasa/issues/7011
-      // either (A): create a more sophisticated solution to link the precise branch and doc to be edited, according to branch settings
-      // or (B): create a README document (or a section in the main README) which explains how to contribute docs fixes, and link all edit links to this
-      rootEditUrl: 'https://github.com/rasahq/rasa/',
-      productLogo: '/img/logo-rasa-oss.png',
-      versionLabels: {
-        current: 'Master/Unreleased',
-      },
-      legacyVersions: [
-        {
-          label: 'Legacy 1.x',
-          href: 'https://legacy-docs-v1.rasa.com',
-          target: '_blank',
-          rel: 'nofollow noopener noreferrer',
-        },
-      ],
-      ...tabulaConfig,
-    },
 
-    favicon: '/img/favicon.ico',
-    organizationName: 'RasaHQ',
-    projectName: tabulaConfig.productKey,
 
-    footer: {
-      copyright: `Copyright © ${new Date().getFullYear()} Rasa Technologies GmbH`,
-    },
-  },
-});
+
 
 /**
  * @description
  * Configure the urls where the site is hosted and provide links to sibling pages, community and blog.
- * @param {import('@docusaurus/types').DocusaurusConfig} siteConfig
+ * @param {import('@docusaurus/types').DocusaurusConfig} docusaurusConfig
  * @param {TabulaConfig} tabulaConfig
  * @returns {void}
  */
-function useNavigationWithProductPortfolio(siteConfig, tabulaConfig) {
-  var config = siteConfig;
+function useNavigationWithProductPortfolio(docusaurusConfig, tabulaConfig) {
+  var config = docusaurusConfig;
   const isDev = process.env.NODE_ENV === 'development';
   const PROD_URL = 'https://rasa.com';
   const URLS = {
@@ -423,8 +446,8 @@ function useNavigationWithProductPortfolio(siteConfig, tabulaConfig) {
   const { BASE_URL, SWAP_URL } = URLS;
 
   // CONFIGURE URLs
-  config.themeConfig.url = PROD_URL;
-  config.themeConfig.baseUrl = BASE_URL;
+  config.url = PROD_URL;
+  config.baseUrl = BASE_URL;
 
   // CONFIGURE NAVBAR
   const communityLinks = {
@@ -490,7 +513,7 @@ function useNavigationWithProductPortfolio(siteConfig, tabulaConfig) {
 
   config.themeConfig.navbar = {
     hideOnScroll: false,
-    title: 'Rasa Open Source',
+    // title: 'Rasa Open Source',
     items: [...siblingDocs, ...blogAndGithub, communityLinks],
   };
 }

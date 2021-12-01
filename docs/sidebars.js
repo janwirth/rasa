@@ -134,8 +134,8 @@ module.exports = {
       collapsed: true,
       items: [
         'telemetry/telemetry',
-        'telemetry/reference',
-        require('./docs/reference/sidebar.json')],
+        'telemetry/reference'
+        ],
     },
     {
       type: 'category',

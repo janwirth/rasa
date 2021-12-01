@@ -1,4 +1,4 @@
-module.exports = {
+module.exports = (options) => ({
   /**
    * Path to docs page files on filesystem relative to site dir.
    */
@@ -23,8 +23,10 @@ module.exports = {
    * Omitting this variable entirely will disable edit links.
    * NOTE: can return a String or a Function; if Function, `editLocalizedFiles` and `editCurrentVersion` will be ignored
    */
-  editUrl: function ({ locale, version, versionDocsDirPath, docPath, permalink }) {
-    return `https://github.com/rasahq/`;
+  editUrl: function (args) {
+      // INJECTED : correct edit URL and supression when repo is private
+      const url = `https://github.com/RasaHQ/${options.productKey}/tree/main/docs/${args.versionDocsDirPath}/${args.docPath}`;
+      return options.isPrivateRepo ? undefined : url
   },
   /**
    * Useful if you commit localized files to git.
@@ -169,4 +171,4 @@ module.exports = {
    * Tip: limit to 2 or 3 versions to improve startup and build time in dev and deploy previews
    */
   onlyIncludeVersions: undefined, // ex: ["current", "1.0.0", "2.0.0"]
-};
+});

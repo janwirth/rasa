@@ -11,6 +11,10 @@ import { useVersions, useLatestVersion, useActiveDocContext } from '@theme/hooks
 import { useDocsPreferredVersion } from '@docusaurus/theme-common';
 import { translate } from '@docusaurus/Translate';
 
+// INJECTED-START: ADD IMPORT
+import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
+// INJECTED-END
+
 const getVersionMainDoc = (version) => version.docs.find((doc) => doc.id === version.mainDocId);
 
 export default function DocsVersionDropdownNavbarItem({
@@ -24,6 +28,11 @@ export default function DocsVersionDropdownNavbarItem({
   // INJECTED: default values for params
   dropdownItemsBefore = dropdownItemsBefore || [];
   dropdownItemsAfter = dropdownItemsAfter || [];
+
+  const {
+    siteConfig: { customFields },
+  } = useDocusaurusContext();
+
   // INJECTED-END
   const activeDocContext = useActiveDocContext(docsPluginId);
   const versions = useVersions(docsPluginId);
@@ -37,7 +46,9 @@ export default function DocsVersionDropdownNavbarItem({
       const versionDoc = activeDocContext?.alternateDocVersions[version.name] || getVersionMainDoc(version);
       return {
         isNavLink: true,
-        label: version.label,
+          // CHANGED: using custom version label
+        label: customFields.versionLabels[version.name] || version.label,
+          // CHANGED-END
         to: versionDoc.path,
         isActive: () => version === activeDocContext?.activeVersion,
         onClick: () => {
@@ -45,7 +56,12 @@ export default function DocsVersionDropdownNavbarItem({
         },
       };
     });
-    return [...dropdownItemsBefore, ...versionLinks, ...dropdownItemsAfter];
+  // INJECTED: default values for params
+    return [...dropdownItemsBefore, ...versionLinks, ...dropdownItemsAfter]
+          .concat(customFields.legacyVersions || []);
+
+    ;
+  // INJECTED-END
   }
 
   const items = getItems();
@@ -58,7 +74,9 @@ export default function DocsVersionDropdownNavbarItem({
           message: 'Versions',
           description: 'The label for the navbar versions dropdown on mobile view',
         })
-      : dropdownVersion.label;
+          // CHANGED: using custom version label
+          : (customFields.versionLabels[dropdownVersion.name] || dropdownVersion.label);
+          // CHANGED-END
   const dropdownTo = mobile && items ? undefined : getVersionMainDoc(dropdownVersion).path; // We don't want to render a version dropdown with 0 or 1 item
   // If we build the site with a single docs version (onlyIncludeVersions: ['1.0.0'])
   // We'd rather render a button instead of a dropdown
